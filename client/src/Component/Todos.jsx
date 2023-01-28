@@ -1,30 +1,56 @@
 import { useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllTodo } from "../redux/actions/index1";
+import { deleteTodo, getAllTodo } from "../redux/actions/index1";
+import Todo from "./Todo";
 
+import Tabs from "./Tabs";
+
+import { ALL_TODOS, DONE_TODOS, ACTIVE_TODOS } from "../redux/actions/type";
 
 const Todos = () => {
     const dispatch = useDispatch()
-     let todos = useSelector((state) => state.todo);
+    let todos = useSelector((state) => state.todo);
+    let currentTab = useSelector(state=> state.currentTab)
     useEffect(() => { 
         dispatch(getAllTodo())
-},[dispatch])
-    const func = (data) => {
-
-        if (data?.length > 0) {
-            return data.map((todo) => (
-                <li key={todo._id}>{todo.data}</li>
-            
-        ))
+    }, [dispatch])
+    
+    const getTodos = () => {
+        if (ALL_TODOS === currentTab) return todos
+        else if (currentTab === ACTIVE_TODOS) return todos.filter(todo => !todo.done)
+        else if(currentTab === DONE_TODOS) return todos.filter((todo) => todo.done);
     }
-}
+ 
+    const removeDoneTodos = () => {
+        todos.forEach(({ done, _id }) => {
+            if (done) {
+                dispatch(deleteTodo(_id))
+                
+            }
+        })
+    }
    
 
     return (
         <article>
+            <div>
+                <Tabs currentTab={currentTab} />
+                {
+                    todos.some(todo=>todo.done)?(
+                        <button
+                            onClick={removeDoneTodos}
+                            className='button clear'
+                        >
+                            Remove Done Todos
+                        </button>
+                    ):null
+                }
+            </div>
             <ul>{
+               getTodos().map((todo) => (
+                    <Todo key={todo._id} todo={todo} />))
             
-                func(todos.data)
+           
             
             }
             </ul>

@@ -2,6 +2,7 @@ import { useState } from "react";
  import {useDispatch} from "react-redux"
 import { addNewTodo } from "../redux/actions/index1"
 import "./header.css"
+import Tabs from "./Tabs";
 import React from "react";
 const Todoform = () => {
   const [text, setState] = useState("");
